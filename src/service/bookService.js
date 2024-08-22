@@ -1,7 +1,8 @@
 import { Book } from '../models/book.js';
 import { generateId } from '../utils/generateId.js';
 
-let books = [];
+
+export let books = [];
 
 export const createBook = (title, author, year, gender) => {
     const id = generateId();
