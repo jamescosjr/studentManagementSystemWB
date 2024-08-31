@@ -1,30 +1,16 @@
-export class Book {
-    constructor(id, title, author, year, gender) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.gender = gender;
-
-        if (!id || typeof id !== 'string') {
-            throw new Error('ID deve ser uma string não vazia.');
-        }
-
-        this.year = this.validateYear(year);
+const validateBookData = ({ title, author, year }) => {
+    if (!title || typeof title !== 'string') {
+        throw new Error('Invalid title');
     }
-
-    isValidYear(year) {
-        const currentYear = new Date().getFullYear();
-        const parsedYear = Number(year);
-        return !isNaN(parsedYear) && Number.isInteger(parsedYear) && parsedYear > 0 && parsedYear <= currentYear;
+    if (!author || typeof author !== 'string') {
+        throw new Error('Invalid author');
     }
-
-    validateYear(year) {
-        if (year === '') {
-            return 'Ano não fornecido.';
-        }
-        if (year === 0 || !this.isValidYear(year)) {
-            return 'Ano inválido. Não foi cadastrado.';
-        }
-        return Number(year);
+    if (!year || typeof year !== 'number' || year < 0) {
+        throw new Error('Invalid year');
     }
-}
+};
+
+export const createBookModel = ({ title, author, year }) => {
+    validateBookData({ title, author, year });
+    return { title, author, year, id: null };
+};

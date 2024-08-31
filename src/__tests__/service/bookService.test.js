@@ -1,66 +1,55 @@
-import { createBook, listBooks, getBookById, updateBook, deleteBook, books } from '../../service/bookService.js';
-import { generateMockBook } from '../../utils/mockBooks.js';
+import { createBook, listBooks, findBookByTitle, deleteBookById } from '../../service/bookService.js';
+import * as bookRepository from '../../repository/bookRepository.js';
+
+jest.mock('../../repository/bookRepository.js');
 
 describe('Book Service', () => {
-    beforeEach(() => {
-        books.length = 0;
-    });
-
-    it('should create a valid book', () => {
-        const mockBook = generateMockBook();
-        const createdBook = createBook(mockBook.title, mockBook.author, mockBook.year, mockBook.gender);
-
-        expect(createdBook).toEqual(expect.objectContaining({
-            id: expect.any(String),
-            title: mockBook.title,
-            author: mockBook.author,
-            year: mockBook.year,
-            gender: mockBook.gender,
-        }));
+    it('should create a book', () => {
+        const createdBook = { title: 'Test Title', author: 'Test Author', year: 2022, id: null };
+        jest.spyOn(bookRepository, 'create').mockReturnValue(createdBook);
+    
+        const result = createBook({ title: 'Test Title', author: 'Test Author', year: 2022 });
+    
+        expect(result).toEqual(createdBook);
+        expect(bookRepository.create).toHaveBeenCalledWith({ title: 'Test Title', author: 'Test Author', year: 2022, id: null });
     });
 
     it('should list all books', () => {
-        const mockBook1 = generateMockBook();
-        const mockBook2 = generateMockBook();
-        createBook(mockBook1.title, mockBook1.author, mockBook1.year, mockBook1.gender);
-        createBook(mockBook2.title, mockBook2.author, mockBook2.year, mockBook2.gender);
+        const mockBooks = [{ title: 'Test Title', author: 'Test Author', year: 2022 }];
+        bookRepository.findAll.mockReturnValue(mockBooks);
 
-        const allBooks = listBooks();
-        expect(allBooks).toHaveLength(2);
-        expect(allBooks).toEqual(expect.arrayContaining([
-            expect.objectContaining({ title: mockBook1.title }),
-            expect.objectContaining({ title: mockBook2.title })
-        ]));
+        const result = listBooks();
+
+        expect(result).toEqual(mockBooks);
+        expect(bookRepository.findAll).toHaveBeenCalled();
     });
 
-    it('should get a book by ID', () => {
-        const mockBook = generateMockBook();
-        const createdBook = createBook(mockBook.title, mockBook.author, mockBook.year, mockBook.gender);
+    it('should find a book by title', () => {
+        const mockBook = { title: 'Test Title', author: 'Test Author', year: 2022 };
+        bookRepository.findByTitle.mockReturnValue(mockBook);
 
-        const foundBook = getBookById(createdBook.id);
-        expect(foundBook).toEqual(createdBook);
+        const result = findBookByTitle('Test Title');
+
+        expect(result).toEqual(mockBook);
+        expect(bookRepository.findByTitle).toHaveBeenCalledWith('Test Title');
     });
 
-    it('should update a book', () => {
-        const mockBook = generateMockBook();
-        const createdBook = createBook(mockBook.title, mockBook.author, mockBook.year, mockBook.gender);
+    it('should return null if book to delete is not found', () => {
+        bookRepository.deleteById.mockReturnValue(null);
 
-        const updatedBook = updateBook(createdBook.id, 'New Title', 'New Author', 2022, 'New Gender');
-        expect(updatedBook).toEqual(expect.objectContaining({
-            id: createdBook.id,
-            title: 'New Title',
-            author: 'New Author',
-            year: 2022,
-            gender: 'New Gender',
-        }));
+        const result = deleteBookById('999');
+
+        expect(result).toBeNull();
+        expect(bookRepository.deleteById).toHaveBeenCalledWith('999');
     });
 
-    it('should delete a book', () => {
-        const mockBook = generateMockBook();
-        const createdBook = createBook(mockBook.title, mockBook.author, mockBook.year, mockBook.gender);
+    it('should delete a book by id', () => {
+        const mockBook = { title: 'Test Title', author: 'Test Author', year: 2022, id: '123' };
+        bookRepository.deleteById.mockReturnValue(mockBook);
 
-        const deletedBook = deleteBook(createdBook.id);
-        expect(deletedBook).toEqual(createdBook);
-        expect(listBooks()).toHaveLength(0);
+        const result = deleteBookById('123');
+
+        expect(result).toEqual(mockBook);
+        expect(bookRepository.deleteById).toHaveBeenCalledWith('123');
     });
 });
