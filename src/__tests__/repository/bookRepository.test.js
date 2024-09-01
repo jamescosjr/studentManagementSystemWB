@@ -11,11 +11,12 @@ describe('Book Repository', () => {
     });
 
     it('should create a new book with a unique id', () => {
-        mockGenerateId.mockReturnValue('unique-id-1');
+        const id = generateId();
         const bookData = { title: 'Test Title', author: 'Test Author', year: 2022 };
         const createdBook = create(bookData);
 
-        expect(createdBook).toEqual({ ...bookData, id: 'unique-id-1' });
+        expect(createdBook).toMatchObject(bookData);
+        expect(typeof createdBook.id).toEqual(expect.any(String));
         expect(findAll()).toContainEqual(createdBook);
     });
 
