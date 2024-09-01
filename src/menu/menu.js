@@ -3,7 +3,7 @@ import { createBook, listBooks, findBookByTitle, deleteBook } from './menuAction
 
 const prompt = promptSync({ sigint: true });
 
-export const showMenu = () => {
+export function showMenu() {
     console.log('1. Create Book');
     console.log('2. List Books');
     console.log('3. Find Book by Title');
@@ -11,7 +11,7 @@ export const showMenu = () => {
     console.log('0. Exit');
 };
 
-export const handleMenuOption = (option) => {
+export function handleMenuOption(option) {
     switch (option) {
         case 1:
             createBook();
@@ -33,7 +33,7 @@ export const handleMenuOption = (option) => {
     }
 };
 
-export const menuLoop = () => {
+export function menuLoop  ()  {
     while (true) {
         showMenu();
         const option = parseInt(prompt('Select an option: '), 10);

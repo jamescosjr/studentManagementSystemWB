@@ -1,3 +1,3 @@
-export const isValidString = (str) => typeof str === 'string' && str.trim() !== '';
+export function isValidString(str) { typeof str === 'string' && str.trim() !== '' };
 
-export const isValidYear = (year) => typeof year === 'number' && year > 0;
+export function isValidYear(year) { typeof year === 'number' && year > 0 };

@@ -4,7 +4,7 @@ import { createBookHandler, listBooksHandler, findBookByTitleHandler, deleteBook
 
 const prompt = promptSync({ sigint: true });
 
-export const createBook = () => {
+export function createBook() {
     const title = prompt('Enter the book title: ');
     const author = prompt('Enter the book author: ');
     const year = parseInt(prompt('Enter the book year: '), 10);
@@ -12,16 +12,16 @@ export const createBook = () => {
     createBookHandler({ title, author, year });
 };
 
-export const listBooks = () => {
+export function listBooks() {
     listBooksHandler();
 };
 
-export const findBookByTitle = () => {
+export function findBookByTitle() {
     const title = prompt('Enter the book title to search: ');
     findBookByTitleHandler(title);
 };
 
-export const deleteBook = () => {
+export function deleteBook() {
     const id = prompt('Enter the book ID to delete: ');
     deleteBookHandler(id);
 };

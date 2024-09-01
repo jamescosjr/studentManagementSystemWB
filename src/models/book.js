@@ -1,4 +1,4 @@
-const validateBookData = ({ title, author, year }) => {
+function validateBookData({ title, author, year }) {
     if (!title || typeof title !== 'string') {
         throw new Error('Invalid title');
     }
@@ -10,7 +10,7 @@ const validateBookData = ({ title, author, year }) => {
     }
 };
 
-export const createBookModel = ({ title, author, year }) => {
+export function createBookModel({ title, author, year }) {
     validateBookData({ title, author, year });
     return { title, author, year, id: null };
 };

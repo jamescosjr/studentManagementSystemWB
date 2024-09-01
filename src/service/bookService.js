@@ -1,13 +1,13 @@
 import { createBookModel } from '../models/book.js';
 import { create, findAll, findByTitle, deleteById } from '../repository/bookRepository.js';
 
-export const createBook = (data) => {
+export function createBook(data) {
     const book = createBookModel(data);
     return create(book);
 };
 
-export const listBooks = () => findAll();
+export function listBooks() { return findAll() };
 
-export const findBookByTitle = (title) => findByTitle(title);
+export function findBookByTitle(title) { return findByTitle(title) };
 
-export const deleteBookById = (id) => deleteById(id);
+export function deleteBookById(id) { return deleteById(id) };
