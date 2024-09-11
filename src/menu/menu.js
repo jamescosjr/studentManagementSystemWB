@@ -1,29 +1,37 @@
 import promptSync from 'prompt-sync';
-import { createBook, listBooks, findBookByTitle, deleteBook } from './menuActions.js';
+import { createStudent, listStudents, findStudentByName, findStudentByInscription, listStudentsByCourse, deleteStudent } from './menuActions.js';
 
 const prompt = promptSync({ sigint: true });
 
 export function showMenu() {
-    console.log('1. Create Book');
-    console.log('2. List Books');
-    console.log('3. Find Book by Title');
-    console.log('4. Delete Book');
+    console.log('1. Create Student');
+    console.log('2. List Students');
+    console.log('3. Find Student by Name');
+    console.log('4. Find Student by Inscription');
+    console.log('5. List Students by Course');
+    console.log('6. Delete Student');
     console.log('0. Exit');
 };
 
 export function handleMenuOption(option) {
     switch (option) {
         case 1:
-            createBook();
+            createStudent();
             break;
         case 2:
-            listBooks();
+            listStudents();
             break;
         case 3:
-            findBookByTitle();
+            findStudentByName();
             break;
         case 4:
-            deleteBook();
+            findStudentByInscription();
+            break;
+        case 5:
+            listStudentsByCourse();
+            break;
+        case 6:
+            deleteStudent();
             break;
         case 0:
             console.log('Exiting...');

@@ -1,6 +1,5 @@
-import { createBookHandler, listBooksHandler, findBookByTitleHandler, deleteBookHandler } from '../../controllers/bookController.js';
-import * as bookService from '../../service/bookService.js';
-import { createBook, listBooks, findBookByTitle, deleteBookById } from '../../service/bookService.js';
+import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler } from '../../controllers/studentController.js';
+import * as studentService from '../../service/studentService.js';
 
 const logSpy = jest.spyOn(console, 'log').mockImplementation();
 const errorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -9,76 +8,102 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe('Book Handlers', () => {
-    it('should log success message when creating a book', () => {
-        const mockBook = { title: 'Test Title', author: 'Test Author', year: 2022 };
-        jest.spyOn(bookService, 'createBook').mockReturnValue(mockBook);
+describe('Student Handlers', () => {
+    it('should log success message when register a student', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
+        jest.spyOn(studentService, 'createStudent').mockReturnValue(mockStudent);
 
-        createBookHandler(mockBook);
+        createStudentHandler(mockStudent);
 
-        expect(logSpy).toHaveBeenCalledWith('Book created successfully:', mockBook);
+        expect(logSpy).toHaveBeenCalledWith('Student registered successfully:', mockStudent);
     });   
 
-    it('should log error message when creating a book fails', () => {
-        jest.spyOn(bookService, 'createBook').mockImplementation(() => {
+    it('should log error message when registering a student fails', () => {
+        jest.spyOn(studentService, 'createStudent').mockImplementation(() => {
             throw new Error('Creation Error');
         });
 
-        createBookHandler({ title: 'Test Title', author: 'Test Author', year: 2022 });
+        createStudentHandler({ name: 'Test Name', course: 'Test Course', year: 2022 });
 
-        expect(errorSpy).toHaveBeenCalledWith('Error creating book:', 'Creation Error');
+        expect(errorSpy).toHaveBeenCalledWith('Error registering student:', 'Creation Error');
     });
 
-    it('should list all books', () => {
-        const mockBooks = [{ title: 'Test Title', author: 'Test Author', year: 2022 }];
-        jest.spyOn(bookService, 'listBooks').mockReturnValue(mockBooks);
+    it('should list all students', () => {
+        const mockStudents = [{ name: 'Test Name', course: 'Test Course', year: 2022 }];
+        jest.spyOn(studentService, 'listStudents').mockReturnValue(mockStudents);
     
-        listBooksHandler();
+        listStudentsHandler();
     
-        expect(logSpy).toHaveBeenCalledWith('Books:', mockBooks);
+        expect(logSpy).toHaveBeenCalledWith('Students:', mockStudents);
     });
 
-    it('should find a book by title', () => {
-        const mockBook = { title: 'Test Title', author: 'Test Author', year: 2022 };
-        jest.spyOn(bookService, 'findBookByTitle').mockReturnValue(mockBook);
+    it('should find a student by name', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
+        jest.spyOn(studentService, 'findStudentByName').mockReturnValue(mockStudent);
     
-        findBookByTitleHandler('Test Title');
+        findStudentByNameHandler('Test Name');
     
-        expect(logSpy).toHaveBeenCalledWith('Book found:', mockBook);
+        expect(logSpy).toHaveBeenCalledWith('Student found:', mockStudent);
     });
     
-    it('should log not found message if book is not found', () => {
-        jest.spyOn(bookService, 'findBookByTitle').mockReturnValue(null);
+    it('should log not found message if student is not found', () => {
+        jest.spyOn(studentService, 'findStudentByName').mockReturnValue(null);
     
-        findBookByTitleHandler('Nonexistent Title');
+        findStudentByNameHandler('Nonexistent Name');
     
-        expect(logSpy).toHaveBeenCalledWith('Book not found');
-    });
-    
-    it('should delete a book by id', () => {
-        const mockBook = { title: 'Test Title', author: 'Test Author', year: 2022, id: 1 };
-        jest.spyOn(bookService, 'deleteBookById').mockReturnValue(mockBook);
-
-        deleteBookHandler(1);
-
-        expect(logSpy).toHaveBeenCalledWith('Book deleted successfully:', mockBook);
+        expect(logSpy).toHaveBeenCalledWith('Student not found');
     });
 
-    it('should log not found message if book to delete is not found', () => {
-        jest.spyOn(bookService, 'deleteBookById').mockReturnValue(null);
+    it('should find a student by inscription', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
+        jest.spyOn(studentService, 'findStudentByInscription').mockReturnValue(mockStudent);
     
-        deleteBookHandler(999);
+        findStudentByInscriptionHandler('Test Name');
     
-        expect(logSpy).toHaveBeenCalledWith('Book not found, nothing to delete.');
+        expect(logSpy).toHaveBeenCalledWith('Student found:', mockStudent);
+    });
+
+    it('should log not found message if student is not found by inscription', () => {
+        jest.spyOn(studentService, 'findStudentByInscription').mockReturnValue(null);
+
+        findStudentByInscriptionHandler('Nonexistent Name');
+
+        expect(logSpy).toHaveBeenCalledWith('Student not found');
+    });
+
+    it('should list students by course', () => {
+        const mockStudents = [{ name: 'Test Name', course: 'Test Course', year: 2022 }];
+        jest.spyOn(studentService, 'findStudentByCourse').mockReturnValue(mockStudents);
+
+        listStudentsByCourseHandler('Test Course');
+
+        expect(logSpy).toHaveBeenCalledWith('Students found:', mockStudents);
     });
     
-    it('should log error message when deleting a book fails', () => {
-        jest.spyOn(bookService, 'deleteBookById').mockImplementation(() => {
+    it('should delete a student by id', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022, id: 1 };
+        jest.spyOn(studentService, 'deleteStudentById').mockReturnValue(mockStudent);
+
+        deleteStudentHandler(1);
+
+        expect(logSpy).toHaveBeenCalledWith('Student deleted successfully:', mockStudent);
+    });
+
+    it('should log not found message if student to delete is not found', () => {
+        jest.spyOn(studentService, 'deleteStudentById').mockReturnValue(null);
+    
+        deleteStudentHandler(999);
+    
+        expect(logSpy).toHaveBeenCalledWith('Student not found, nothing to delete.');
+    });
+    
+    it('should log error message when deleting a student fails', () => {
+        jest.spyOn(studentService, 'deleteStudentById').mockImplementation(() => {
             throw new Error('Deletion Error');
         });
     
-        deleteBookHandler(1);
+        deleteStudentHandler(1);
     
-        expect(errorSpy).toHaveBeenCalledWith('Error deleting book:', 'Deletion Error');
+        expect(errorSpy).toHaveBeenCalledWith('Error deleting student:', 'Deletion Error');
     });
 });
