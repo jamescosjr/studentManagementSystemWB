@@ -1,5 +1,5 @@
 import promptSync from 'prompt-sync';
-import { createStudent, listStudents, findStudentByName, findStudentByInscription, listStudentsByCourse, deleteStudent } from './menuActions.js';
+import { createStudent, listStudents, findStudentByName, findStudentByInscription, listStudentsByCourse, deleteStudent, updateStudent } from './menuActions.js';
 
 const prompt = promptSync({ sigint: true });
 
@@ -10,6 +10,7 @@ export function showMenu() {
     console.log('4. Find Student by Inscription');
     console.log('5. List Students by Course');
     console.log('6. Delete Student');
+    console.log('7. Update Student');
     console.log('0. Exit');
 };
 
@@ -32,6 +33,9 @@ export function handleMenuOption(option) {
             break;
         case 6:
             deleteStudent();
+            break;
+        case 7:
+            updateStudent();
             break;
         case 0:
             console.log('Exiting...');

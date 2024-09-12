@@ -1,4 +1,4 @@
-import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler } from '../../controllers/studentController.js';
+import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler, updateStudentHandler } from '../../controllers/studentController.js';
 import * as studentService from '../../service/studentService.js';
 
 const logSpy = jest.spyOn(console, 'log').mockImplementation();
@@ -105,5 +105,22 @@ describe('Student Handlers', () => {
         deleteStudentHandler(1);
     
         expect(errorSpy).toHaveBeenCalledWith('Error deleting student:', 'Deletion Error');
+    });
+
+    it('should update a student by id', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022, id: 1 };
+        jest.spyOn(studentService, 'updateStudentById').mockReturnValue(mockStudent);
+
+        updateStudentHandler(1, mockStudent);
+
+        expect(logSpy).toHaveBeenCalledWith('Student updated successfully:', mockStudent);
+    });
+
+    it('should log not found message if student to update is not found', () => {
+        jest.spyOn(studentService, 'updateStudentById').mockReturnValue(null);
+
+        updateStudentHandler(999, { name: 'Test Name', course: 'Test Course', year: 2022 });
+
+        expect(logSpy).toHaveBeenCalledWith('Student not found, nothing to update.');
     });
 });

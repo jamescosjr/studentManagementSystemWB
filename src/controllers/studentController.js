@@ -1,4 +1,4 @@
-import { createStudent, listStudents, findStudentByName, findStudentByInscription, findStudentByCourse, deleteStudentById } from '../service/studentService.js';
+import { createStudent, listStudents, findStudentByName, findStudentByInscription, findStudentByCourse, deleteStudentById, updateStudentById } from '../service/studentService.js';
 
 export function createStudentHandler(data) {
     try {
@@ -53,3 +53,16 @@ export function deleteStudentHandler(id) {
         console.error('Error deleting student:', error.message);
     }
 };
+
+export function updateStudentHandler(id, updatedStudent) {
+    try {
+        const result = updateStudentById(id, updatedStudent);
+        if (!result) {
+            console.log('Student not found, nothing to update.');
+            return;
+        }
+        console.log('Student updated successfully:', result);
+    } catch (error) {
+        console.error('Error updating student:', error.message);
+    }
+}

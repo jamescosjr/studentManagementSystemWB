@@ -1,4 +1,4 @@
-import { createStudent, listStudents, findStudentByName, findStudentByInscription, findStudentByCourse, deleteStudentById } from '../../service/studentService.js';
+import { createStudent, listStudents, findStudentByName, findStudentByInscription, findStudentByCourse, deleteStudentById, updateStudentById } from '../../service/studentService.js';
 import * as studentRepository from '../../repository/studentRepository.js';
 
 jest.mock('../../repository/studentRepository.js');
@@ -71,5 +71,24 @@ describe('Student Service', () => {
 
         expect(result).toEqual(mockStudent);
         expect(studentRepository.deleteById).toHaveBeenCalledWith('123');
+    });
+
+    it('should return null if student to update is not found', () => {
+        studentRepository.updateById.mockReturnValue(null);
+
+        const result = updateStudentById('999', { name: 'Test Name', course: 'Test Course', year: 2022 });
+
+        expect(result).toBeNull();
+        expect(studentRepository.updateById).toHaveBeenCalledWith('999', { name: 'Test Name', course: 'Test Course', year: 2022 });
+    });
+
+    it('should update a student by id', () => {
+        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022, id: '123' };
+        studentRepository.updateById.mockReturnValue(mockStudent);
+
+        const result = updateStudentById('123', { name: 'Test Name', course: 'Test Course', year: 2022 });
+
+        expect(result).toEqual(mockStudent);
+        expect(studentRepository.updateById).toHaveBeenCalledWith('123', { name: 'Test Name', course: 'Test Course', year: 2022 });
     });
 });

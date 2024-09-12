@@ -27,3 +27,18 @@ export function deleteById(id) {
     }
     return null;
 };
+
+export function updateById(id, updatedStudent) {
+    const index = students.findIndex(student => student.id === id);
+    if (index === -1) {
+        return null;
+    }
+
+    if (updatedStudent.course && updatedStudent.course !== students[index].course) {
+        updatedStudent.inscription = inscriptionGenerator(updatedStudent.course);
+    }
+
+    students[index] = { ...students[index], ...updatedStudent };
+
+    return students[index];
+}

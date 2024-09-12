@@ -1,5 +1,5 @@
 import promptSync from 'prompt-sync';
-import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler } from '../controllers/studentController.js';
+import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler, updateStudentHandler } from '../controllers/studentController.js';
 
 
 const prompt = promptSync({ sigint: true });
@@ -35,3 +35,18 @@ export function deleteStudent() {
     const id = prompt('Enter the student ID to delete: ');
     deleteStudentHandler(id);
 };
+
+export function updateStudent() {
+    const id = prompt('Enter the student ID to update: ');
+
+    const name = prompt('Enter the new student name (leave blank to keep current): ');
+    const course = prompt('Enter the new student course (leave blank to keep current): ');
+    const year = prompt('Enter the new student year (leave blank to keep current): ');
+
+    const updatedStudent = {};
+    if (name) updatedStudent.name = name;
+    if (course) updatedStudent.course = course;
+    if (year) updatedStudent.year = parseInt(year, 10);
+
+    updateStudentHandler(id, updatedStudent);
+}

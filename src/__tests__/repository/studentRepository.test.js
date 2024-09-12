@@ -1,4 +1,4 @@
-import { create, findAll, findByName, findByInscription, findByCourse, deleteById, students } from '../../repository/studentRepository.js';
+import { create, findAll, findByName, findByInscription, findByCourse, deleteById, students, updateById } from '../../repository/studentRepository.js';
 import { generateId } from '../../utils/generateId.js';
 import { inscriptionGenerator } from '../../utils/generateInscription.js';
 
@@ -89,5 +89,20 @@ describe('Student Repository', () => {
         const deletedStudent = deleteById('non-existing-id');
 
         expect(deletedStudent).toBeNull();
+    });
+
+    it('should update a student by id', () => {
+        mockGenerateId.mockReturnValue('unique-id');
+        mockInscriptionGenerator.mockReturnValue('unique-inscription');
+        const student = create({ name: 'Name to Update', course: 'Course', year: 2022 });
+        const updatedStudent = updateById(student.id, { name: 'Updated Name' });
+
+        expect(updatedStudent).toEqual({ ...student, name: 'Updated Name' });
+    });
+
+    it('should return null when updating a student by a non-existing id', () => {
+        const updatedStudent = updateById('non-existing-id', { name: 'Updated Name' });
+
+        expect(updatedStudent).toBeNull();
     });
 });
