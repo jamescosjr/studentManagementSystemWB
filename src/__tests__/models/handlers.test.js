@@ -1,126 +1,332 @@
-import { createStudentHandler, listStudentsHandler, findStudentByNameHandler, findStudentByInscriptionHandler, listStudentsByCourseHandler, deleteStudentHandler, updateStudentHandler } from '../../controllers/studentController.js';
-import * as studentService from '../../service/studentService.js';
+import {
+  createStudentHandler,
+  listStudentsHandler,
+  findStudentByNameHandler,
+  findStudentByInscriptionHandler,
+  listStudentsByCourseHandler,
+  deleteStudentHandler,
+  updateStudentHandler,
+} from "../../controllers/studentController.js";
+import * as studentRepository from "../../repository/studentRepository.js";
+const logSpy = jest.spyOn(console, "log").mockImplementation();
+const errorSpy = jest.spyOn(console, "error").mockImplementation();
 
-const logSpy = jest.spyOn(console, 'log').mockImplementation();
-const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-
-afterEach(() => {
+describe("Student Handlers", () => {
+  afterEach(() => {
     jest.clearAllMocks();
-});
+  });
+  it("should return a 201 when create a new student", async () => {
+    const mockStudent = {
+      name: "Test name",
+      year: 2022,
+      course: "Test course",
+    };
+    jest.spyOn(studentRepository, "create").mockResolvedValue(mockStudent);
 
-describe('Student Handlers', () => {
-    it('should log success message when register a student', () => {
-        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
-        jest.spyOn(studentService, 'createStudent').mockReturnValue(mockStudent);
+    const req = { body: mockStudent };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
-        createStudentHandler(mockStudent);
+    await createStudentHandler(req, res);
 
-        expect(logSpy).toHaveBeenCalledWith('Student registered successfully:', mockStudent);
-    });   
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(mockStudent);
+  });
+  it("should return a 400 when create a student with invalid data", async () => {
+    const mockStudent = {
+      name: "Test name",
+      year: 2022,
+    };
+    jest.spyOn(studentRepository, "create").mockResolvedValue(mockStudent);
 
-    it('should log error message when registering a student fails', () => {
-        jest.spyOn(studentService, 'createStudent').mockImplementation(() => {
-            throw new Error('Creation Error');
-        });
+    const req = { body: mockStudent };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
-        createStudentHandler({ name: 'Test Name', course: 'Test Course', year: 2022 });
+    await createStudentHandler(req, res);
 
-        expect(errorSpy).toHaveBeenCalledWith('Error registering student:', 'Creation Error');
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith("Invalid student data");
+  });
+  it("should return a 500 when create a student with invalid data", async () => {
+    const mockStudent = {
+      name: "Test name",
+      year: 2022,
+      course: "Test course",
+    };
+    jest
+      .spyOn(studentRepository, "create")
+      .mockRejectedValue(new Error("Error creating student"));
+
+    const req = { body: mockStudent };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+    await createStudentHandler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith(
+      "Error creating student: Error creating student"
+    );
+  });
+  it("should return a 200 when list all students", async () => {
+    const mockStudents = [
+      {
+        name: "Test name",
+        year: 2022,
+        course: "Test course",
+      },
+      {
+        name: "Test name 2",
+        year: 2022,
+        course: "Test course 2",
+      },
+    ];
+    jest.spyOn(studentRepository, "findAll").mockResolvedValue(mockStudents);
+
+    const req = {};
+    const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+
+    await listStudentsHandler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(mockStudents);
+  });
+  it("should return a 500 when list all students", async () => {
+    jest
+      .spyOn(studentRepository, "findAll")
+      .mockRejectedValue(new Error("Error listing students"));
+
+    const req = {};
+    const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+
+    await listStudentsHandler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith(
+      "Error listing students:",
+      "Error listing students"
+    );
+  });
+    it("should return a 200 when find a student by name", async () => {
+        const mockStudent = {
+        name: "Test name",
+        year: 2022,
+        course: "Test course",
+        };
+        jest.spyOn(studentRepository, "findByName").mockResolvedValue(mockStudent);
+    
+        const req = { params: { name: "Test name" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await findStudentByNameHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(mockStudent);
     });
-
-    it('should list all students', () => {
-        const mockStudents = [{ name: 'Test Name', course: 'Test Course', year: 2022 }];
-        jest.spyOn(studentService, 'listStudents').mockReturnValue(mockStudents);
+    it("should return a 404 when find a student by name", async () => {
+        jest.spyOn(studentRepository, "findByName").mockResolvedValue(null);
     
-        listStudentsHandler();
+        const req = { params: { name: "Test name" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        expect(logSpy).toHaveBeenCalledWith('Students:', mockStudents);
+        await findStudentByNameHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith("Student not found");
     });
-
-    it('should find a student by name', () => {
-        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
-        jest.spyOn(studentService, 'findStudentByName').mockReturnValue(mockStudent);
+    it("should return a 500 when find a student by name", async () => {
+        jest
+        .spyOn(studentRepository, "findByName")
+        .mockRejectedValue(new Error("Error finding student"));
     
-        findStudentByNameHandler('Test Name');
+        const req = { params: { name: "Test name" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        expect(logSpy).toHaveBeenCalledWith('Student found:', mockStudent);
+        await findStudentByNameHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        "Error finding student:",
+        "Error finding student"
+        );
     });
+    it("should return a 200 when find a student by inscription", async () => {
+        const mockStudent = {
+        name: "Test name",
+        year: 2022,
+        course: "Test course",
+        };
+        jest
+        .spyOn(studentRepository, "findByInscription")
+        .mockResolvedValue(mockStudent);
     
-    it('should log not found message if student is not found', () => {
-        jest.spyOn(studentService, 'findStudentByName').mockReturnValue(null);
+        const req = { params: { inscription: "Test inscription" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        findStudentByNameHandler('Nonexistent Name');
+        await findStudentByInscriptionHandler(req, res);
     
-        expect(logSpy).toHaveBeenCalledWith('Student not found');
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(mockStudent);
     });
-
-    it('should find a student by inscription', () => {
-        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022 };
-        jest.spyOn(studentService, 'findStudentByInscription').mockReturnValue(mockStudent);
+    it("should return a 404 when find a student by inscription", async () => {
+        jest.spyOn(studentRepository, "findByInscription").mockResolvedValue(null);
     
-        findStudentByInscriptionHandler('Test Name');
+        const req = { params: { inscription: "Test inscription" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        expect(logSpy).toHaveBeenCalledWith('Student found:', mockStudent);
+        await findStudentByInscriptionHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith("Student not found");
     });
-
-    it('should log not found message if student is not found by inscription', () => {
-        jest.spyOn(studentService, 'findStudentByInscription').mockReturnValue(null);
-
-        findStudentByInscriptionHandler('Nonexistent Name');
-
-        expect(logSpy).toHaveBeenCalledWith('Student not found');
-    });
-
-    it('should list students by course', () => {
-        const mockStudents = [{ name: 'Test Name', course: 'Test Course', year: 2022 }];
-        jest.spyOn(studentService, 'findStudentByCourse').mockReturnValue(mockStudents);
-
-        listStudentsByCourseHandler('Test Course');
-
-        expect(logSpy).toHaveBeenCalledWith('Students found:', mockStudents);
-    });
+    it("should return a 500 when find a student by inscription", async () => {
+        jest
+        .spyOn(studentRepository, "findByInscription")
+        .mockRejectedValue(new Error("Error finding student"));
     
-    it('should delete a student by id', () => {
-        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022, id: 1 };
-        jest.spyOn(studentService, 'deleteStudentById').mockReturnValue(mockStudent);
-
-        deleteStudentHandler(1);
-
-        expect(logSpy).toHaveBeenCalledWith('Student deleted successfully:', mockStudent);
+        const req = { params: { inscription: "Test inscription" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await findStudentByInscriptionHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        "Error finding student:",
+        "Error finding student"
+        );
     });
-
-    it('should log not found message if student to delete is not found', () => {
-        jest.spyOn(studentService, 'deleteStudentById').mockReturnValue(null);
+    it("should return a 200 when list students by course", async () => {
+        const mockStudents = [
+        {
+            name: "Test name",
+            year: 2022,
+            course: "Test course",
+        },
+        {
+            name: "Test name 2",
+            year: 2022,
+            course: "Test course",
+        },
+        ];
+        jest.spyOn(studentRepository, "findByCourse").mockResolvedValue(mockStudents);
     
-        deleteStudentHandler(999);
+        const req = { params: { course: "Test course" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        expect(logSpy).toHaveBeenCalledWith('Student not found, nothing to delete.');
+        await listStudentsByCourseHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(mockStudents);
     });
+    it("should return a 404 when list students by course", async () => {
+        jest.spyOn(studentRepository, "findByCourse").mockResolvedValue([]);
     
-    it('should log error message when deleting a student fails', () => {
-        jest.spyOn(studentService, 'deleteStudentById').mockImplementation(() => {
-            throw new Error('Deletion Error');
-        });
+        const req = { params: { course: "nonExistent" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
     
-        deleteStudentHandler(1);
+        await listStudentsByCourseHandler(req, res);
     
-        expect(errorSpy).toHaveBeenCalledWith('Error deleting student:', 'Deletion Error');
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith("Students not found");
     });
-
-    it('should update a student by id', () => {
-        const mockStudent = { name: 'Test Name', course: 'Test Course', year: 2022, id: 1 };
-        jest.spyOn(studentService, 'updateStudentById').mockReturnValue(mockStudent);
-
-        updateStudentHandler(1, mockStudent);
-
-        expect(logSpy).toHaveBeenCalledWith('Student updated successfully:', mockStudent);
+    it("should return a 500 when list students by course", async () => {
+        jest
+        .spyOn(studentRepository, "findByCourse")
+        .mockRejectedValue(new Error("Error finding students"));
+    
+        const req = { params: { course: "Test course" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await listStudentsByCourseHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        "Error finding students:",
+        "Error finding students"
+        );
     });
-
-    it('should log not found message if student to update is not found', () => {
-        jest.spyOn(studentService, 'updateStudentById').mockReturnValue(null);
-
-        updateStudentHandler(999, { name: 'Test Name', course: 'Test Course', year: 2022 });
-
-        expect(logSpy).toHaveBeenCalledWith('Student not found, nothing to update.');
+    it("should return a 200 when delete a student", async () => {
+        const mockStudent = {
+        name: "Test name",
+        year: 2022,
+        course: "Test course",
+        };
+        jest.spyOn(studentRepository, "deleteById").mockResolvedValue(mockStudent);
+    
+        const req = { params: { id: "123" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await deleteStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith("Student deleted successfully");
+    });
+    it("should return a 404 when delete a student", async () => {
+        jest.spyOn(studentRepository, "deleteById").mockResolvedValue(null);
+    
+        const req = { params: { id: "123" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await deleteStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith("Student not found");
+    });
+    it("should return a 500 when delete a student", async () => {
+        jest
+        .spyOn(studentRepository, "deleteById")
+        .mockRejectedValue(new Error("Error deleting student"));
+    
+        const req = { params: { id: "123" } };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await deleteStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        "Error deleting student:",
+        "Error deleting student"
+        );
+    });
+    it("should return a 200 when update a student", async () => {
+        const mockStudent = {
+        name: "Test name",
+        year: 2022,
+        course: "Test course",
+        };
+        jest.spyOn(studentRepository, "updateById").mockResolvedValue(mockStudent);
+    
+        const req = { params: { id: "123" }, body: mockStudent };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await updateStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(mockStudent);
+    });
+    it("should return a 404 when update a student", async () => {
+        jest.spyOn(studentRepository, "updateById").mockResolvedValue(null);
+    
+        const req = { params: { id: "123" }, body: {} };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await updateStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith("Student not found");
+    });
+    it("should return a 500 when update a student", async () => {
+        jest
+        .spyOn(studentRepository, "updateById")
+        .mockRejectedValue(new Error("Error updating student"));
+    
+        const req = { params: { id: "123" }, body: {} };
+        const res = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+    
+        await updateStudentHandler(req, res);
+    
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith(
+        "Error updating student:",
+        "Error updating student"
+        );
     });
 });
