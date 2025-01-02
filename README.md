@@ -1,7 +1,3 @@
-Here's a draft for your README file tailored to the routes you provided:  
-
----
-
 # Student Management API  
 
 This API provides endpoints for managing students. It supports operations such as adding, retrieving, updating, and deleting student records.
