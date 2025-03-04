@@ -1,4 +1,3 @@
-import { inscriptionGenerator } from '../../domain/utils/generateInscription.js';
 import { Student } from '../schema/studentSchema.js';
 
 export function studentRegister(name, inscription, course, year) {

@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: Student Management System API
+  version: 1.0.0
+paths:
+  /students:
+    post:
+      summary: Register a new student
+      operationId: studentRegisterController
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                course:
+                  type: string
+                year:
+                  type: integer
+              required:
+                - name
+                - course
+                - year
+      responses:
+        '201':
+          description: Student registered successfully
+        '400':
+          description: Validation error
+        '500':
+          description: Internal server error
+    get:
+      summary: Get all students
+      operationId: findAllController
+      responses:
+        '200':
+          description: A list of students
+        '500':
+          description: Internal server error
+  /students/name/{name}:
+    get:
+      summary: Get students by name
+      operationId: findByNameController
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of students with the specified name
+        '404':
+          description: Students not found
+        '500':
+          description: Internal server error
+  /students/inscription/{inscription}:
+    get:
+      summary: Get students by inscription
+      operationId: findByInscriptionController
+      parameters:
+        - name: inscription
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of students with the specified inscription
+        '404':
+          description: Students not found
+        '500':
+          description: Internal server error
+  /students/course/{course}:
+    get:
+      summary: Get students by course
+      operationId: findByCourseController
+      parameters:
+        - name: course
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of students with the specified course
+        '404':
+          description: Students not found
+        '500':
+          description: Internal server error
+  /students/{id}:
+    delete:
+      summary: Delete a student by ID
+      operationId: deleteByIdController
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Student deleted successfully
+        '404':
+          description: Student not found
+        '500':
+          description: Internal server error
+    put:
+      summary: Update a student by ID
+      operationId: updateByIdController
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                course:
+                  type: string
+                year:
+                  type: integer
+              required:
+                - name
+                - course
+                - year
+      responses:
+        '200':
+          description: Student updated successfully
+        '400':
+          description: Validation error
+        '404':
+          description: Student not found
+        '500':
+          description: Internal server error

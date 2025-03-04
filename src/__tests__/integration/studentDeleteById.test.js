@@ -1,8 +1,7 @@
 import supertest from "supertest";
-import { Student } from "../../infrastrucuture/schema/studentSchema";
-import { app } from "../../../server";
-import { AppError, ValidationError, NotFoundError } from "../../domain/utils/error/customErros";
-const dbHandler = require('../../../jest/jest.setup');
+import { Student } from "../../infrastrucuture/schema/studentSchema.js";
+import app from "../../../server.js";
+const dbHandler = require('../../../jest/jest.setup.js');
 
 beforeAll(async () => {
     await dbHandler.connect();

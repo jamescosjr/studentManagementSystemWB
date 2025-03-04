@@ -1,7 +1,7 @@
-import { findAll, findByCourse, findByInscription, findByName } from "../../infrastrucuture/repository/studentRepositoryRead";
-import { studentRegister, deleteById, updateById } from "../../infrastrucuture/repository/studentRepositoryWrite";
-import { AppError, NotFoundError } from "../utils/error/customErros";
-import { inscriptionGenerator } from "../utils/generateInscription";
+import { findAll, findByCourse, findByInscription, findByName } from "../../infrastrucuture/repository/studentRepositoryRead.js";
+import { studentRegister, deleteById, updateById } from "../../infrastrucuture/repository/studentRepositoryWrite.js";
+import { AppError, NotFoundError } from "../utils/error/customErros.js";
+import { inscriptionGenerator } from "../utils/generateInscription.js";
 
 export async function studentRegisterService(name, course, year) {
     const inscription = inscriptionGenerator(course)

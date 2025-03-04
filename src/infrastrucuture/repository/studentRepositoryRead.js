@@ -1,4 +1,4 @@
-import { Student } from "../schema/studentSchema"
+import { Student } from "../schema/studentSchema.js"
 
 export function findAll() {
     try {
